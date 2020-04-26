@@ -85,6 +85,19 @@ class Game extends React.Component {
       </div>
     );
   }
+  componentDidMount() {
+    const liff = window.liff
+    const liffId = process.env.REACT_APP_LIFF_ID
+    liff.init({ liffId: liffId }).then(() => {
+      console.log("liff init.");
+      if (!liff.isLoggedIn()) {
+        console.log("is not LINE login. exec LINE login");
+        liff.login();
+      }
+    }).catch((err) => {
+      console.log(err.code, err.message)
+    })
+  }
 }
 
 // ========================================
