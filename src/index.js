@@ -190,7 +190,9 @@ class Tobuy extends React.Component {
       console.log("liff init.");
       if (!liff.isLoggedIn()) {
         console.log("is not LINE login. exec LINE login");
-        liff.login();
+        liff.login({
+          redirectUri: process.env.REACT_APP_REDIRECT_URI
+        });
       }
     }).catch((err) => {
       console.log(err.code, err.message)
