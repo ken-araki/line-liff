@@ -1,11 +1,18 @@
-import * as common from '../common';
+import axios from 'axios';
 
-const api = common.api('/line');
-const JWT_HEADER_NAME = 'X_LIFF_JWT';
-const ACCESS_TOKEN_HEADER_NAME = 'X_LIFF_ACCESS_TOKEN';
+export function auth(jwt, accessToken) {
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-export function getToken(jwt, accessToken) {
-  api.setHeader(JWT_HEADER_NAME, jwt);
-  api.setHeader(ACCESS_TOKEN_HEADER_NAME, accessToken);
-  return api.client.post('/token');
+  const client = axios.create({
+    responseType: 'json',
+    baseURL: API_BASE_URL + '/line',
+    headers: {
+      'Content-Type': 'application/json',
+      'token': process.env.REACT_APP_API_TOKEN,
+      'nonce': 'hoge',
+      'X_LIFF_JWT': jwt,
+      'X_LIFF_ACCESS_TOKEN': accessToken
+    }
+  });
+  return client.post('/token');
 }

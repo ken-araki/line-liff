@@ -1,16 +1,43 @@
 import * as common from '../common';
 
-const client = common.api('/api/v1/tobuy').client;
+const client = common.api('/api/v1/tobuy');
 
-export function fetchTobuy() {
-  return client.get();
+export function fetchTobuy(success) {
+  return client.get()
+    .then(response => {
+      console.log('response: ', response);
+      if (success instanceof Function) {
+        success(response.data);
+      }
+    })
+    .catch(err => {
+      console.log('err:', err);
+    });
 }
 
-export function addTobuy(goods) {
+export function addTobuy(goods, success) {
   console.log(goods)
-  return client.post(`/add?goods=${goods}`);
+  return client.post(`/add?goods=${goods}`)
+    .then(response => {
+      console.log('response: ', response);
+      if (success instanceof Function) {
+        success(response.data);
+      }
+    })
+    .catch(err => {
+      console.log('err:', err);
+    });
 }
 
-export function buy(params) {
-  return client.post('/buy', params);
+export function buy(params, success) {
+  return client.post('/buy', params)
+    .then(response => {
+      console.log('response: ', response);
+      if (success instanceof Function) {
+        success(response.data);
+      }
+    })
+    .catch(err => {
+      console.log('err:', err);
+    });
 }

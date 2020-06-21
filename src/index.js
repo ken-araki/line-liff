@@ -73,36 +73,25 @@ class Board extends React.Component {
   }
 
   fetchTobuy() {
-    api.fetchTobuy()
-      .then(res => {
-        console.log(res);
-        this.setState({
-          tobuyList: res.data
-        });
+    api.fetchTobuy(res => {
+      this.setState({
+        tobuyList: res.data
       });
+    });
   }
 
   addTobuy(goods) {
-    api.addTobuy(goods).then(_ => { this.fetchTobuy() });
+    api.addTobuy(goods, res => { this.fetchTobuy() });
   }
 
   buy() {
-    api.buy(JSON.stringify(this.state.checked)).then(_ => {
-      this.setState({ checked: [] })
-      this.fetchTobuy()
-    });
-    // fetch(`${this.TOBUY_API_URL}/buy`, {
-    //   method: 'POST',
-    //   body: JSON.stringify(this.state.checked),
-    //   headers: new Headers({
-    //     'Content-type': 'application/json',
-    //     'token': this.API_TOKEN,
-    //     'nonce': 'hoge'
-    //   })
-    // }).then(_ => {
-    //   this.setState({ checked: [] })
-    //   this.fetchTobuy()
-    // });
+    api.buy(
+      JSON.stringify(this.state.checked),
+      res => {
+        this.setState({ checked: [] })
+        this.fetchTobuy()
+      }
+    );
   }
 
   isChecked(i) {
@@ -184,7 +173,7 @@ class Tobuy extends React.Component {
       } else {
         // webブラウザ利用とLIFF利用でログイン仕様が異なる（っぽい）
         // SSO認証での戻り値(code, state)を利用して、`oauth2/v2.1/auth`を利用すれば良いかと思ったが、LIFF loginの際はどうやら違うらしい。
-        line.getToken(liff.getIDToken(), liff.getAccessToken())
+        line.auth(liff.getIDToken(), liff.getAccessToken())
       }
     }).catch((err) => {
       console.log(err.code, err.message)
