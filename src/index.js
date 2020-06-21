@@ -8,6 +8,8 @@ import Col from 'react-bootstrap/Col'
 import ListGroup from 'react-bootstrap/ListGroup'
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import * as api from './api/tobuy';
+import * as line from './api/line';
 
 class Addition extends React.Component {
   constructor(props) {
@@ -59,8 +61,6 @@ function Item(props) {
 }
 
 class Board extends React.Component {
-  TOBUY_API_URL = process.env.REACT_APP_API_URL + '/api/v1/tobuy';
-  API_TOKEN = process.env.REACT_APP_API_TOKEN;
   constructor(props) {
     super(props);
     this.state = {
@@ -73,46 +73,36 @@ class Board extends React.Component {
   }
 
   fetchTobuy() {
-    fetch(this.TOBUY_API_URL, {
-      method: 'GET',
-      headers: new Headers({
-        'token': this.API_TOKEN,
-        'nonce': 'hoge'
-      })
-    })
-      .then(res => res.json())
+    api.fetchTobuy()
       .then(res => {
+        console.log(res);
         this.setState({
           tobuyList: res.data
         });
-      })
+      });
   }
 
   addTobuy(goods) {
-    fetch(`${this.TOBUY_API_URL}/add?goods=${goods}`, {
-      method: 'POST',
-      headers: new Headers({
-        'token': this.API_TOKEN,
-        'nonce': 'hoge'
-      })
-    }).then(_ => {
-      this.fetchTobuy()
-    });
+    api.addTobuy(goods).then(_ => { this.fetchTobuy() });
   }
 
   buy() {
-    fetch(`${this.TOBUY_API_URL}/buy`, {
-      method: 'POST',
-      body: JSON.stringify(this.state.checked),
-      headers: new Headers({
-        'Content-type': 'application/json',
-        'token': this.API_TOKEN,
-        'nonce': 'hoge'
-      })
-    }).then(_ => {
+    api.buy(JSON.stringify(this.state.checked)).then(_ => {
       this.setState({ checked: [] })
       this.fetchTobuy()
     });
+    // fetch(`${this.TOBUY_API_URL}/buy`, {
+    //   method: 'POST',
+    //   body: JSON.stringify(this.state.checked),
+    //   headers: new Headers({
+    //     'Content-type': 'application/json',
+    //     'token': this.API_TOKEN,
+    //     'nonce': 'hoge'
+    //   })
+    // }).then(_ => {
+    //   this.setState({ checked: [] })
+    //   this.fetchTobuy()
+    // });
   }
 
   isChecked(i) {
@@ -190,9 +180,11 @@ class Tobuy extends React.Component {
       console.log("liff init.");
       if (!liff.isLoggedIn()) {
         console.log("is not LINE login. exec LINE login");
-        liff.login({
-          redirectUri: process.env.REACT_APP_REDIRECT_URI
-        });
+        liff.login()
+      } else {
+        // webブラウザ利用とLIFF利用でログイン仕様が異なる（っぽい）
+        // SSO認証での戻り値(code, state)を利用して、`oauth2/v2.1/auth`を利用すれば良いかと思ったが、LIFF loginの際はどうやら違うらしい。
+        line.getToken(liff.getIDToken(), liff.getAccessToken())
       }
     }).catch((err) => {
       console.log(err.code, err.message)
