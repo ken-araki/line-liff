@@ -12,12 +12,13 @@ export function auth(jwt, accessToken) {
     }
   });
   return client.post('/nonce').then(res => {
-    console.log(res)
-    return getToken(jwt, accessToken, res.data.data.nonceId)
+    console.log(res);
+    let t = res.data.data;
+    return getToken(jwt, accessToken, t.nonce, t.token)
   });
 }
 
-export function getToken(jwt, accessToken, nonceId) {
+export function getToken(jwt, accessToken, nonce, onetimeToken) {
   return axios.create({
     responseType: 'json',
     baseURL: API_BASE_URL + '/line',
@@ -26,7 +27,8 @@ export function getToken(jwt, accessToken, nonceId) {
       'token': process.env.REACT_APP_API_TOKEN,
       'X_LIFF_JWT': jwt,
       'X_LIFF_ACCESS_TOKEN': accessToken,
-      'X_LIFF_NONCE_ID': nonceId
+      'X_LIFF_NONCE': nonce,
+      'X_LIFF_ONETIME_TOKEN': onetimeToken
     }
   }).post('/token');
 }
