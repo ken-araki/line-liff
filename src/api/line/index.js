@@ -1,18 +1,32 @@
 import axios from 'axios';
 
-export function auth(jwt, accessToken) {
-  const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
+export function auth(jwt, accessToken) {
   const client = axios.create({
     responseType: 'json',
     baseURL: API_BASE_URL + '/line',
     headers: {
       'Content-Type': 'application/json',
       'token': process.env.REACT_APP_API_TOKEN,
-      'nonce': 'hoge',
-      'X_LIFF_JWT': jwt,
-      'X_LIFF_ACCESS_TOKEN': accessToken
     }
   });
-  return client.post('/token');
+  return client.post('/nonce').then(res => {
+    console.log(res)
+    return getToken(jwt, accessToken, res.data.data.nonceId)
+  });
+}
+
+export function getToken(jwt, accessToken, nonceId) {
+  return axios.create({
+    responseType: 'json',
+    baseURL: API_BASE_URL + '/line',
+    headers: {
+      'Content-Type': 'application/json',
+      'token': process.env.REACT_APP_API_TOKEN,
+      'X_LIFF_JWT': jwt,
+      'X_LIFF_ACCESS_TOKEN': accessToken,
+      'X_LIFF_NONCE_ID': nonceId
+    }
+  }).post('/token');
 }
