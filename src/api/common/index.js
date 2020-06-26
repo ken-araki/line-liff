@@ -1,14 +1,39 @@
 import axios from 'axios';
 
-export function api(basePath) {
-  const API_BASE_URL = process.env.REACT_APP_API_URL;
-  return axios.create({
-    responseType: 'json',
-    baseURL: API_BASE_URL + basePath,
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+
+
+const LIFF_API = axios.create({
+  responseType: 'json',
+  baseURL: API_BASE_URL
+});
+
+export function defualtConfig() {
+  return {
     headers: {
       'Content-Type': 'application/json',
       'token': process.env.REACT_APP_API_TOKEN,
-      'nonce': 'hoge'
+      'nonce': 'nonce1hoge'
     }
-  });
+  }
+}
+
+export function get(path, config, success) {
+  return LIFF_API.get(path, config)
+    .then(res => {
+      console.log(res)
+      if (success instanceof Function) {
+        success(res.data);
+      }
+    });
+}
+
+export function post(path, params, config, success) {
+  return LIFF_API.post(path, params, config)
+    .then(res => {
+      console.log(res)
+      if (success instanceof Function) {
+        success(res.data);
+      }
+    });
 }

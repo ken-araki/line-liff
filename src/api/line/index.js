@@ -1,16 +1,13 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+import * as common from '../common';
 
 export function auth(jwt, accessToken) {
-  return axios.create({
-    responseType: 'json',
-    baseURL: API_BASE_URL + '/line',
+  let header = {
     headers: {
       'Content-Type': 'application/json',
       'token': process.env.REACT_APP_API_TOKEN,
       'X_LIFF_JWT': jwt,
       'X_LIFF_ACCESS_TOKEN': accessToken
     }
-  }).post('/token');
+  };
+  return common.post('/line/token', {}, header);
 }

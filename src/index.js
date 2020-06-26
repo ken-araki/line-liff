@@ -69,7 +69,22 @@ class Board extends React.Component {
     };
   }
   componentDidMount() {
-    this.fetchTobuy()
+    const liff = window.liff
+    const liffId = process.env.REACT_APP_LIFF_ID
+    liff.init({ liffId: liffId }).then(() => {
+      console.log("liff init.");
+      if (!liff.isLoggedIn()) {
+        console.log("is not LINE login. exec LINE login");
+        liff.login()
+      } else {
+        // webブラウザ利用とLIFF利用でログイン仕様が異なる（っぽい）
+        // SSO認証での戻り値(code, state)を利用して、`oauth2/v2.1/auth`を利用すれば良いかと思ったが、LIFF loginの際はどうやら違うらしい。
+        line.auth(liff.getIDToken(), liff.getAccessToken());
+        this.fetchTobuy();
+      }
+    }).catch((err) => {
+      console.log(err.code, err.message)
+    })
   }
 
   fetchTobuy() {
@@ -161,23 +176,6 @@ class Tobuy extends React.Component {
     return (
       <div><Board /></div>
     );
-  }
-  componentDidMount() {
-    const liff = window.liff
-    const liffId = process.env.REACT_APP_LIFF_ID
-    liff.init({ liffId: liffId }).then(() => {
-      console.log("liff init.");
-      if (!liff.isLoggedIn()) {
-        console.log("is not LINE login. exec LINE login");
-        liff.login()
-      } else {
-        // webブラウザ利用とLIFF利用でログイン仕様が異なる（っぽい）
-        // SSO認証での戻り値(code, state)を利用して、`oauth2/v2.1/auth`を利用すれば良いかと思ったが、LIFF loginの際はどうやら違うらしい。
-        const jwtToken = line.auth(liff.getIDToken(), liff.getAccessToken());
-      }
-    }).catch((err) => {
-      console.log(err.code, err.message)
-    })
   }
 }
 
