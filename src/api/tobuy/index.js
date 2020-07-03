@@ -7,7 +7,7 @@ export function fetchTobuy(success) {
 
 export function addTobuy(goods, success) {
   let config = common.defualtConfig()
-  return common.post('/api/v1/tobuy/add', { "goods": goods }, config, success);
+  return common.post(`/api/v1/tobuy/add?goods=${goods}`, {}, config, success);
 }
 
 export function buy(params, success) {
