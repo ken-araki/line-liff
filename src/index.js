@@ -79,8 +79,12 @@ class Board extends React.Component {
       } else {
         // webブラウザ利用とLIFF利用でログイン仕様が異なる（っぽい）
         // SSO認証での戻り値(code, state)を利用して、`oauth2/v2.1/auth`を利用すれば良いかと思ったが、LIFF loginの際はどうやら違うらしい。
-        line.auth(liff.getIDToken(), liff.getAccessToken());
-        this.fetchTobuy();
+        line.auth(
+          liff.getIDToken(),
+          liff.getAccessToken(),
+          () => { this.fetchTobuy(); },
+          () => { liff.logout(); }
+        );
       }
     }).catch((err) => {
       console.log(err.code, err.message)

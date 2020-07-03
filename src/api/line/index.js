@@ -1,6 +1,6 @@
 import * as common from '../common';
 
-export function auth(jwt, accessToken) {
+export function auth(jwt, accessToken, success, error) {
   let header = {
     headers: {
       'Content-Type': 'application/json',
@@ -9,5 +9,15 @@ export function auth(jwt, accessToken) {
       'X_LIFF_ACCESS_TOKEN': accessToken
     }
   };
-  return common.post('/line/token', {}, header);
+  common.post('/line/token', {}, header, (data) => {
+    common.jwtToken = data.data;
+    if (success instanceof Function) {
+      success();
+    }
+  }).catch(err => {
+    console.error(err);
+    if (error instanceof Function) {
+      error();
+    }
+  });
 }

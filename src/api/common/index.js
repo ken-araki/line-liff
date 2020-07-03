@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-
+export let jwtToken = '';
 
 const LIFF_API = axios.create({
   responseType: 'json',
@@ -12,8 +12,8 @@ export function defualtConfig() {
   return {
     headers: {
       'Content-Type': 'application/json',
-      'token': process.env.REACT_APP_API_TOKEN,
-      'nonce': 'nonce1hoge'
+      'X_ARK_TOKEN': process.env.REACT_APP_API_TOKEN,
+      'X_ARK_AUTHENTICATION': jwtToken
     }
   }
 }
